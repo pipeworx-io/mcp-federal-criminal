@@ -124,7 +124,7 @@ async function query(m: DocketMirror, qs: string): Promise<DocketRow[]> {
   if (!res.ok) {
     const body = (await res.text()).slice(0, 200);
     throw new Error(
-      `Docket mirror query failed (HTTP ${res.status}) against ${m.url.replace(/https?:\/\//, '').split('.')[0]}: ${body}`,
+      `Docket query failed (HTTP ${res.status}) against ${m.url.replace(/https?:\/\//, '').split('.')[0]}: ${body}`,
     );
   }
   return (await res.json()) as DocketRow[];
@@ -201,20 +201,27 @@ async function searchDockets(
   };
 
   let rows: DocketRow[] = await fetchRows(s.filedAfter, s.filedBefore);
-  // A date window beyond the mirror's snapshot returns 0 rows as a clean
+  // A date window beyond what this dataset covers returns 0 rows as a clean
   // success — "securities class actions filed after 2026-07-24" answered
-  // "none exist" when the truth was "the snapshot ends earlier" (fleet #508's
+  // "none exist" when the truth was "the coverage ends earlier" (fleet #508's
   // verbatim question died here after the routing fix). On a dated empty,
-  // retry once WITHOUT the dates: if data exists, return the newest the
-  // mirror holds and say the window outran the snapshot — the caller learns
-  // the mirror's horizon instead of a false negative.
+  // retry once WITHOUT the dates: if data exists, return the newest available
+  // and say the window outran what is covered — the caller learns the
+  // coverage horizon instead of a false negative.
   let dateWindowNote: string | undefined;
   if (rows.length === 0 && (s.filedAfter || s.filedBefore)) {
     const undated = await fetchRows(undefined, undefined);
     if (undated.length > 0) {
       rows = undated;
+      // WORDING IS LOAD-BEARING, same rule as labelAge's note in authority.ts:
+      // no "the mirror's" / "the mirror holds" — that is a claim about who
+      // stores what, not about what the data says. check:hosting-claims did
+      // not catch this before shared/ was wired into its string pass (task
+      // #2009); "pipeworx mirror of CourtListener bulk data" a few lines
+      // below was the same defect on the `source` field of every response on
+      // this rail, across all five packs that call searchDockets().
       dateWindowNote =
-        `No dockets matched within the requested date window (${s.filedAfter ?? ''}..${s.filedBefore ?? ''}) — the mirror's newest matching docket is ${undated[0]?.date_filed ?? 'unknown'}, so the window likely outran the snapshot. Returning the newest matching dockets the mirror holds; treat absence WITHIN the window as UNKNOWN, not as zero filings.`;
+        `No dockets matched within the requested date window (${s.filedAfter ?? ''}..${s.filedBefore ?? ''}) — the newest matching docket on file is ${undated[0]?.date_filed ?? 'unknown'}, so the window likely outran what is covered. Returning the newest matching dockets available; treat absence WITHIN the window as UNKNOWN, not as zero filings.`;
     }
   }
 
@@ -223,7 +230,7 @@ async function searchDockets(
     dockets: rows.map(shapeDocket),
     ...(dateWindowNote ? { date_window_note: dateWindowNote } : {}),
     snapshot_date: rows[0]?.snapshot_date ?? null,
-    source: 'pipeworx mirror of CourtListener bulk data',
+    source: 'CourtListener bulk docket data',
     attribution: 'CourtListener / Free Law Project — Public Domain Mark.',
     // Said on every response, not just empty ones: a docket is the existence of
     // a case, and an agent that assumes otherwise will describe filings it has
@@ -233,7 +240,7 @@ async function searchDockets(
     ...(rows.length === 0
       ? {
           found: false,
-          hint: 'No docket matched. Names are matched by word, so try one distinctive party alone ("Theranos" rather than a full caption). Consumer bankruptcy filings are deliberately not mirrored.',
+          hint: 'No docket matched. Names are matched by word, so try one distinctive party alone ("Theranos" rather than a full caption). Consumer bankruptcy filings are deliberately excluded from this dataset.',
         }
       : {}),
   };
