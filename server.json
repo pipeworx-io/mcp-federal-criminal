@@ -3,7 +3,7 @@
   "name": "io.github.pipeworx-io/federal-criminal",
   "title": "Federal Criminal",
   "description": "Federal criminal prosecutions — US federal court dockets.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "websiteUrl": "https://pipeworx.io/packs/federal-criminal",
   "repository": {
     "url": "https://github.com/pipeworx-io/mcp-federal-criminal",
