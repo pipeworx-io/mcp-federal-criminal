@@ -1,12 +1,20 @@
 {
   "name": "@pipeworx/mcp-federal-criminal",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Federal criminal prosecutions — US federal court dockets.",
   "type": "module",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./tools.json": "./tools.json",
+    "./package.json": "./package.json"
+  },
   "bin": {
     "mcp-federal-criminal": "bin/cli.js"
+  },
+  "files": ["bin/", "lib/", "tools.json", "server.json"],
+  "engines": {
+    "node": ">=18"
   },
   "keywords": ["mcp", "mcp-server", "model-context-protocol", "pipeworx", "federal-criminal"],
   "license": "MIT",
@@ -14,19 +22,12 @@
     "type": "git",
     "url": "git+https://github.com/pipeworx-io/mcp-federal-criminal.git"
   },
-  "scripts": {
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.30.0",
-    "tsx": "^4.19.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.9.3",
-    "@cloudflare/workers-types": "^4.20260405.1"
-  },
+  "mcpName": "io.github.pipeworx-io/federal-criminal",
   "pipeworx": {
-    "sourceHash": "v1-520103958ba5a69632dd83bbf3176fd37a810f087ce2ff99bc2b4abb4cb91480",
-    "sourceCommit": "722087a9bda73f85942e8f6bbfd598544cb0d490"
+    "mode": "gateway",
+    "slug": "federal-criminal",
+    "gatewaySlug": "federal-criminal",
+    "sourceHash": "v1-7de7f2d5aa27d278459c6632d98cd154521a541bab89ce84b7fca819016a5048",
+    "sourceCommit": "bb047243cf27f32453103de186b8e6a8b6a1ce79"
   }
 }
