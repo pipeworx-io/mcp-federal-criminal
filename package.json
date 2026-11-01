@@ -1,6 +1,6 @@
 {
   "name": "@pipeworx/mcp-federal-criminal",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Federal criminal prosecutions — US federal court dockets.",
   "type": "module",
   "main": "lib/index.js",
@@ -27,7 +27,7 @@
     "mode": "gateway",
     "slug": "federal-criminal",
     "gatewaySlug": "federal-criminal",
-    "sourceHash": "v1-7de7f2d5aa27d278459c6632d98cd154521a541bab89ce84b7fca819016a5048",
-    "sourceCommit": "bb047243cf27f32453103de186b8e6a8b6a1ce79"
+    "sourceHash": "v1-8a749881e5f5fc13265bd29154bf6663447de2d8012d042f5b1e660555e101d6",
+    "sourceCommit": "d35e32c1ffe988e24d391dedb35666387fd2b3d6"
   }
 }
